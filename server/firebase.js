@@ -2,16 +2,19 @@
 const admin = require('firebase-admin');
 const firebase = require('firebase');
 
-/*---- INITIALIZE Admin -----*/
+/*---- get config files ---*/
 const serviceAccount = require('./firebaseAdmin.json');
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-});
-
-/*---- INITIALIZE Firebase -----*/
 const firebaseConfig = require('./firebase.json');
 
+/*---- INITIALIZE Admin ---*/
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: firebaseConfig.storageBucket,
+});
+
+admin.firestore().settings({ ignoreUndefinedProperties: true });
+
+/*---- INITIALIZE Firebase ---*/
 firebase.initializeApp(firebaseConfig);
 
 module.exports = { firebase, admin };
