@@ -1,3 +1,4 @@
+const { string, number } = require('joi');
 const User = require('../../models/User');
 
 /** Update currently authenticated users profile image */
@@ -11,9 +12,13 @@ async function setImage(req, res) {
 }
 
 /** get the currently authenticated users profile */
-async function getCurrentUserProfile(req, res) {
-    const user = await User.get(req.idToken.uid);
-    res.json(user);
+async function getUserProfile(req, res) {
+    const { username } = req.params;
+    const user = await User.getByUserName(username);
+
+    if (!user) return res.status(404).json({ message: 'user not found' });
+
+    res.json({ userid: user.id, ...user.data() });
 }
 
 async function updateProfile(req, res) {
@@ -24,4 +29,4 @@ async function updateProfile(req, res) {
     res.json({ success: true, message: 'profile updated' });
 }
 
-module.exports = { setImage, getCurrentUserProfile, updateProfile };
+module.exports = { setImage, getUserProfile, updateProfile };

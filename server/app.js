@@ -1,6 +1,8 @@
 const express = require('express');
 const postRouter = require('./routes/posts');
 const authRouter = require('./routes/auth');
+const profileRouter = require('./routes/profile');
+const errorHandler = require('./middleware/errorHandler');
 
 /*------ EXPRESS ------*/
 const app = express();
@@ -17,6 +19,10 @@ app.use((req, res, next) => {
 /*------ ROUTES ------*/
 app.use('/api', authRouter);
 app.use('/api/posts', postRouter);
+app.use('/api/profile', profileRouter);
+
+/*----- Error Handling ----- */
+app.use(errorHandler);
 
 /*---- Start Server -----*/
 const port = 5000;

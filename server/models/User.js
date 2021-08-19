@@ -29,9 +29,7 @@ class User {
             dateadded: admin.firestore.Timestamp.now(),
         };
 
-        const user = await User.collection.doc(this.uid).set(newRecord);
-
-        return user;
+        return await User.collection.doc(this.uid).set(newRecord);
     }
 
     /** Update a user record in firestore */
@@ -45,7 +43,7 @@ class User {
 
         if (result.empty) return null;
 
-        return result.docs[0].data();
+        return result.docs[0];
     }
 
     /** Get user document by username */
@@ -62,9 +60,9 @@ class User {
     static async get(id) {
         const result = await User.collection.doc(id).get();
 
-        if (result.empty) return null;
+        if (!result.exists) return null;
 
-        return result.data();
+        return result;
     }
 }
 

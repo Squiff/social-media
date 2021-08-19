@@ -6,10 +6,10 @@ class Post {
     static db = admin.firestore();
     static collection = Post.db.collection(Post.collectionName);
 
-    constructor({ title, body, username }) {
+    constructor({ title, body, userid }) {
         this.title = title;
         this.body = body;
-        this.username = username;
+        this.userid = userid;
     }
 
     /** Add Post to firestore */
@@ -17,12 +17,12 @@ class Post {
         /* validate data */
         if (!this.title) throw new Error('title was not provided');
         if (!this.body) throw new Error('body was not provided');
-        if (!this.username) throw new Error('username was not provided');
+        if (!this.userid) throw new Error('userid was not provided');
 
         const newRecord = {
             title: this.title,
             body: this.body,
-            username: this.username,
+            userid: this.userid,
             dateadded: admin.firestore.Timestamp.now(),
         };
 
@@ -31,18 +31,43 @@ class Post {
         return post;
     }
 
-    static async getPosts({ limit = 50 }) {
-        const postData = await Post.collection.orderBy('dateadded', 'desc').limit(limit).get();
-        const posts = [];
+    /** Get a post by id */
+    static async get(postid) {
+        const result = await Post.collection.doc(postid).get();
+        if (!result.exists) return null;
 
-        postData.forEach((doc) => {
-            const { body, user, dateadded } = doc.data();
-            const ISODateAdded = dateadded.toDate().toISOString();
+        return result;
+    }
 
-            posts.push({ id: doc.id, body, user, dateadded: ISODateAdded });
-        });
+    static async getPosts({ limit }) {
+        limit = limit || 10;
 
-        return posts;
+        const results = await Post.collection.orderBy('dateadded', 'desc').limit(limit).get();
+        return results.docs;
+    }
+
+    // when we get a post, we want
+
+    static async getUserPosts(userid, { limit }) {
+        limit = limit || 10;
+
+        const results = await Post.collection
+            .where('userid', '==', userid)
+            .orderBy('dateadded', 'desc')
+            .limit(limit)
+            .get();
+
+        return results.docs;
+    }
+
+    /** Update a post record */
+    static async update(postid, data) {
+        return await Post.collection.doc(postid).update(data);
+    }
+
+    /** delete a single post by id */
+    static async delete(postid) {
+        await Post.collection.doc(postid).delete();
     }
 }
 
