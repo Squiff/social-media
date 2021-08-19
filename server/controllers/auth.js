@@ -6,7 +6,7 @@ async function signUp(req, res) {
     const { email, password, username } = req.body;
 
     // VALIDATION
-    const { error, value } = signUpSchema.validate(req.body);
+    const { error } = signUpSchema.validate(req.body);
 
     if (error) {
         return res.status(400).json({ success: false, message: error.message });
@@ -54,7 +54,7 @@ async function login(req, res) {
     const { email, password } = req.body;
 
     // VALIDATION
-    const { error, value } = loginSchema.validate(req.body);
+    const { error } = loginSchema.validate(req.body);
 
     if (error) {
         return res.status(400).json({ success: false, message: error.message });
